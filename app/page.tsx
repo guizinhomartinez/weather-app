@@ -1,101 +1,95 @@
-import Image from "next/image";
+"use client"
+
+import { useEffect, useState } from "react";
+import * as React from "react"
+import { useQueryState } from "nuqs";
+import { MainSec } from "@/components/sections/mainSec";
+import SearchBar from "@/components/searchBar"
+import { getWeather } from "@/components/getWeatherAPI";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [latestUpdate, setLatestUpdate] = useState("");
+  const [weather, setWeather] = useState("");
+  const [feelsLike, setFeelsLike] = useState("");
+  const [cityName, setCityName] = useQueryState("cityName", { defaultValue: "Esch-sur-Alzette" });
+  const [cityNameFake, setCityNameFake] = useState("");
+  const [cityNameDisplay, setCityNameDisplay] = useState("Esch-sur-Alzette");
+  const [cityNameFake2, setCityNameFake2] = useState("Esch-sur-Alzette");
+  const [returnSVG, setReturnSVG] = useState("");
+  const [high, setHigh] = useState("");
+  const [low, setLow] = useState("");
+  const [time, setTime] = useState("");
+  const [tempsArray, setTempsArray] = useState(["", ""]);
+  const [areaName, setAreaName] = useState("");
+  const [countryName, setCountryName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    if (cityName === "") {
+      setCityName(`Esch-sur-Alzette`);
+    }
+  }, [cityName, setCityName]);
+
+  useEffect(() => {
+    const handleTempUnitChange = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getWeather(cityName);
+        if (result) {
+          const unit = localStorage.getItem('tempUnit') === "F" ? "°F" : "°C";
+          setWeather(result.temp + unit);
+          setFeelsLike("Feels like " + result.feelsLike + unit);
+          setReturnSVG(result.emoji);
+          setHigh(result.highest + unit);
+          setLow(result.lowest + unit);
+          setTime(result.time ?? "");
+          setLatestUpdate(result.lastUpdate);
+          setTempsArray([...tempsArray.slice(0, 0), result.highest, result.lowest]);
+          setAreaName(result.areaName);
+          setCountryName(result.countryName);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    handleTempUnitChange();
+    window.addEventListener('storage', handleTempUnitChange);
+
+    return () => {
+      window.removeEventListener('storage', handleTempUnitChange);
+    };
+  }, [cityName]);
+
+  return (
+    <>
+      <div className="flex flex-col m-0 md:m-2 transition-all duration-300 md:gap-2">
+        <div className="flex justify-between items-center">
+          <SearchBar
+            cityNameFake={cityName}
+            setCityNameFake={setCityNameFake}
+            setCityName={setCityName}
+            setCityNameFake2={setCityNameFake2}
+            onCityNameDisplayChange={setCityNameDisplay}
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <MainSec
+          lastUpdated={isLoading ? "" : latestUpdate}
+          weather={isLoading ? "" : weather}
+          feelsLike={isLoading ? "" : feelsLike}
+          cityName={cityNameDisplay}
+          returnedSVG={isLoading ? "" : returnSVG}
+          high={isLoading ? "" : high}
+          low={isLoading ? "" : low}
+          timeOfDay={time}
+          highs={isLoading ? "" : tempsArray[0]}
+          lows={isLoading ? "" : tempsArray[1]}
+          areaName={isLoading ? "" : areaName}
+          countryName={isLoading ? "" : countryName}
+        />
+      </div>
+    </>
   );
 }
