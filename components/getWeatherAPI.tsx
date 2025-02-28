@@ -1,5 +1,5 @@
+/* eslint-disable */ 
 'use client'
-
 
 const fetchWeatherData = async (city: string) => {
     const apiURL = `https://en.wttr.in/${city}?format=j1`;
@@ -59,7 +59,7 @@ export const getHourlyWeather = async (city: string) => {
 
     const weatherDescs = response.weather.map((day: any) => day.hourly[0].weatherDesc[0].value);
 
-    let result = {
+    const result = {
         highOne: maxtempCs[0],
         highTwo: maxtempCs[1],
         highThree: maxtempCs[2],

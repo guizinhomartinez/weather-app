@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function returnSVG(e: string, t: string, size:number = 128) {
-    var returnedVal;
+    let returnedVal;
     const timeOfDay = t === "day" ? "day" : "night";
     
     switch (e.trim().toLowerCase()) {

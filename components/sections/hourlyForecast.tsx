@@ -3,7 +3,7 @@
 import { getDailyWeather } from "@/components/getWeatherAPI";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { returnSVG } from "./customFunctions/returnSVG";
 import { Droplet } from "lucide-react";
 
@@ -17,7 +17,7 @@ interface HourlyData {
 }
 
 export const HourlyForecast = () => {
-    const [cityName, setCityName] = useQueryState("cityName", { defaultValue: "Esch-sur-Alzette" });
+    const [cityName] = useQueryState("cityName", { defaultValue: "Esch-sur-Alzette" });
     const [hourlyData, setHourlyData] = useState<HourlyData[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -37,10 +37,10 @@ export const HourlyForecast = () => {
         };
 
         handleTempUnitChange();
-        
+
         // Atualiza a cada 5 minutos
         const interval = setInterval(handleTempUnitChange, 5 * 60 * 1000);
-        
+
         window.addEventListener('storage', handleTempUnitChange);
 
         return () => {
@@ -50,26 +50,28 @@ export const HourlyForecast = () => {
     }, [cityName]);
 
     return (
-        <div className="w-full">
-            <div className="ml-0.5 mb-6 text-2xl font-bold">Today's Forecast</div>
-            <div className="flex overflow-x-auto pb-4 gap-4">
-                {!isLoading && hourlyData.length > 0 ? (
-                    hourlyData.map((hour, index) => (
-                        <HourlyItem key={index} data={hour} />
-                    ))
-                ) : (
-                    Array(8).fill(0).map((_, index) => (
-                        <HourlyItemSkeleton key={index} />
-                    ))
-                )}
+        <Suspense>
+            <div className="w-full">
+                <div className="ml-0.5 mb-6 text-2xl font-bold">Forecast of Today</div>
+                <div className="flex overflow-x-auto pb-4 gap-4">
+                    {!isLoading && hourlyData.length > 0 ? (
+                        hourlyData.map((hour, index) => (
+                            <HourlyItem key={index} data={hour} />
+                        ))
+                    ) : (
+                        Array(8).fill(0).map((_, index) => (
+                            <HourlyItemSkeleton key={index} />
+                        ))
+                    )}
+                </div>
             </div>
-        </div>
+        </Suspense>
     );
 };
 
 const HourlyItem = ({ data }: { data: HourlyData }) => {
     const unit = localStorage.getItem('tempUnit') === "F" ? "°F" : "°C";
-    
+
     const hour = parseInt(data.time.split(':')[0]);
     const time = (hour >= 18 || hour < 6) ? "night" : "day";
     let displayedTime = "";

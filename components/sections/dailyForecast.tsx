@@ -1,21 +1,20 @@
 "use client"
 
-import { getHourlyWeather, getWeather } from "@/components/getWeatherAPI";
+import { getHourlyWeather } from "@/components/getWeatherAPI";
 import { Dot } from "lucide-react";
-import Image from "next/image";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { returnSVG } from "./customFunctions/returnSVG";
 
 export const DailyForecast = ({ highTemp, lowTemp }: { highTemp: string, lowTemp: string }) => {
-    const [cityName, setCityName] = useQueryState("cityName", { defaultValue: "Esch-sur-Alzette" });
+    const [cityName] = useQueryState("cityName", { defaultValue: "Esch-sur-Alzette" });
     const [hourlyHighOne, setHourlyHighOne] = useState("");
     const [hourlyHighTwo, setHourlyHighTwo] = useState("");
     const [hourlyHighThree, setHourlyHighThree] = useState("");
     const [hourlyLowOne, setHourlyLowOne] = useState("");
     const [hourlyLowTwo, setHourlyLowTwo] = useState("");
     const [hourlyLowThree, setHourlyLowThree] = useState("");
-    const [timeOfDay, setTimeOfDay] = useState("");
+    const [timeOfDay] = useState("");
     const [weatherOne, setWeatherOne] = useState("");
     const [weatherTwo, setWeatherTwo] = useState("");
     const [weatherThree, setWeatherThree] = useState("");
@@ -49,7 +48,7 @@ export const DailyForecast = ({ highTemp, lowTemp }: { highTemp: string, lowTemp
 
         handleTempUnitChange();
         window.addEventListener('storage', handleTempUnitChange);
-        
+
         return () => {
             window.removeEventListener('storage', handleTempUnitChange);
         };
@@ -57,22 +56,24 @@ export const DailyForecast = ({ highTemp, lowTemp }: { highTemp: string, lowTemp
 
     return (
         <>
-            <div className='ml-0.5 mb-6 text-2xl font-bold'>Next 3-day Forecast</div>
-            <div className="flex flex-col w-full gap-2">
-                {!isLoading ? (
-                    <>
-                        <DailyForecastItems highTemp={hourlyHighOne} lowTemp={hourlyLowOne} index={1} timeOfDay={timeOfDay} weatherCode={weatherOne}/>
-                        <DailyForecastItems highTemp={hourlyHighTwo} lowTemp={hourlyLowTwo} index={2} timeOfDay={timeOfDay} weatherCode={weatherTwo}/>
-                        <DailyForecastItems highTemp={hourlyHighThree} lowTemp={hourlyLowThree} index={3} timeOfDay={timeOfDay} weatherCode={weatherThree}/>
-                    </>
-                ) : (
-                    <>
-                        <DailyForecastItems highTemp="" lowTemp="" index={1} timeOfDay="" weatherCode=""/>
-                        <DailyForecastItems highTemp="" lowTemp="" index={2} timeOfDay="" weatherCode=""/>
-                        <DailyForecastItems highTemp="" lowTemp="" index={3} timeOfDay="" weatherCode=""/>
-                    </>
-                )}
-            </div>
+            <Suspense>
+                <div className='ml-0.5 mb-6 text-2xl font-bold'>Next 3-day Forecast</div>
+                <div className="flex flex-col w-full gap-2">
+                    {!isLoading ? (
+                        <>
+                            <DailyForecastItems highTemp={hourlyHighOne} lowTemp={hourlyLowOne} index={1} timeOfDay={timeOfDay} weatherCode={weatherOne} />
+                            <DailyForecastItems highTemp={hourlyHighTwo} lowTemp={hourlyLowTwo} index={2} timeOfDay={timeOfDay} weatherCode={weatherTwo} />
+                            <DailyForecastItems highTemp={hourlyHighThree} lowTemp={hourlyLowThree} index={3} timeOfDay={timeOfDay} weatherCode={weatherThree} />
+                        </>
+                    ) : (
+                        <>
+                            <DailyForecastItems highTemp="" lowTemp="" index={1} timeOfDay="" weatherCode="" />
+                            <DailyForecastItems highTemp="" lowTemp="" index={2} timeOfDay="" weatherCode="" />
+                            <DailyForecastItems highTemp="" lowTemp="" index={3} timeOfDay="" weatherCode="" />
+                        </>
+                    )}
+                </div>
+            </Suspense >
         </>
     )
 }

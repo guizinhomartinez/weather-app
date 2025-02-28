@@ -7,9 +7,9 @@ import { Dot, ThermometerSnowflake, ThermometerSun } from "lucide-react"
 import { useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 
-export function MainSec({ lastUpdated, weather, feelsLike, cityName, returnedSVG, high, low, timeOfDay, highs, lows, areaName, countryName }: { lastUpdated: string, weather: string, feelsLike: string, cityName: string, returnedSVG: string, high: string, low: string, timeOfDay: string, highs: string, lows: string, areaName: string, countryName: string }) {
+export function MainSec({ lastUpdated, weather, feelsLike, returnedSVG, high, low, timeOfDay, highs, lows, areaName, countryName }: { lastUpdated: string, weather: string, feelsLike: string, cityName: string, returnedSVG: string, high: string, low: string, timeOfDay: string, highs: string, lows: string, areaName: string, countryName: string }) {
     const [displayedCityName, setDisplayedCityName] = useState("");
-    const [cityNameCool, setCityNameCool] = useQueryState("cityName", { defaultValue: "Esch-sur-Alzette" });
+    const [cityNameCool] = useQueryState("cityName", { defaultValue: "Esch-sur-Alzette" });
     useEffect(() => {
         if (cityNameCool !== null) {
             setDisplayedCityName(cityNameCool);
@@ -58,7 +58,7 @@ const locationDiv = (displayedCityName: string, areaName: string, countryName: s
     }
 }
 
-const showCityCountryToo = (city: any, country: any) => {
+const showCityCountryToo = (city: string, country: string) => {
     if (!city && !country) {
         return (
             <>
@@ -111,7 +111,7 @@ const ShowMainWeather = ({ weather, feelsLike, high, low, returnedSVG }: { weath
     )
 }
 
-const showLastUpdated = (lastUpdated: any) => {
+const showLastUpdated = (lastUpdated: string) => {
     if (!lastUpdated) {
         return <Skeleton className="w-32 h-6" />
     } else {

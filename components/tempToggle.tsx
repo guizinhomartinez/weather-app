@@ -1,4 +1,3 @@
-/* eslint-disable */ 
 "use client"
 
 import { Button } from "@/components/ui/button"
@@ -12,7 +11,7 @@ import { Thermometer } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function TempToggle() {
-  const [tempUnit, setTempUnitState] = useState("C") // eslint-disable-line no-use-before-define
+  const [tempUnit, setTempUnitState] = useState("C")
 
   useEffect(() => {
     const savedUnit = localStorage.getItem('tempUnit')

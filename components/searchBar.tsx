@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import ModeToggle from "./modeToggle";
 import TempToggle from "./tempToggle";
 
@@ -10,7 +10,7 @@ interface SearchBarProps {
     onCityNameDisplayChange: (value: string) => void;
 }
 
-export default function SearchBar({ cityNameFake, setCityNameFake, setCityName, setCityNameFake2, onCityNameDisplayChange }: SearchBarProps) {
+export default function SearchBar({ cityNameFake, setCityName, setCityNameFake2, onCityNameDisplayChange }: SearchBarProps) {
     const [inputValue, setInputValue] = useState(cityNameFake);
 
     useEffect(() => {
